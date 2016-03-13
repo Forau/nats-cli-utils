@@ -2,6 +2,10 @@
 A small collection of command line tools for working with nats messaging system.
 This is a work in progress...
 
+To get all commands, run: ```
+go get -v -u github.com/Forau/nats-cli-utils/...                                                                             
+```
+
 Tool        | Description
 ----        | -----------
 nats-tail   | Do tail on one or several nats subjects
