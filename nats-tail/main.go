@@ -4,7 +4,9 @@ package main
 
 import (
 	"github.com/nats-io/nats"
-	"gopkg.in/alecthomas/kingpin.v2"
+
+	"flag"
+	"fmt"
 
 	"encoding/hex"
 	"os"
@@ -14,20 +16,27 @@ import (
 )
 
 var (
-	natsUri   = kingpin.Flag("uri", "Uri to connect with NATS").Default(nats.DefaultURL).Short('u').String()
-	sub       = kingpin.Flag("sub", "The subject(s) to listen to").Default("debug.>").Short('s').String()
-	templText = kingpin.Flag("templ", "Template for output in golang text/template format with some added functions").
-			Default("{{time.Unix}}\t{{.Subject}}\t{{.Reply}}\n\t{{.Data | hex }}").
-			Short('t').String()
-
-	raw = kingpin.Flag("raw", "Short for template that just prints the data as it comes. Is equal to -t \"{{.Data|printf \"%s\"}}\"").
-		Short('r').Bool()
-
-	templ *template.Template
+	natsUri string
+	templ   *template.Template
 )
 
 func init() {
-	kingpin.Parse()
+	flag.StringVar(&natsUri, "url", nats.DefaultURL, "Uri to connect with NATS")
+	templText := flag.String("templ", "{{time.Unix}}\t{{.Subject}}\t{{.Reply}}\n\t{{.Data | hex }}", "Template for output in golang text/template format with some added functions")
+	raw := flag.Bool("raw", false, "Short for template that just prints the data as it comes. Is equal to -t \"{{.Data|printf \"%s\"}}\"")
+
+	flag.Usage = func() {
+		fmt.Fprint(os.Stderr, "Usage: nats-tail <flags> subject\n\n")
+		fmt.Fprint(os.Stderr, "Arguments:\n     subject: The NATS subject to listen on. Wildcards are supported.\n\n")
+		fmt.Fprint(os.Stderr, "Flags:\n")
+		flag.PrintDefaults()
+	}
+
+	flag.Parse()
+	if flag.NArg() < 1 {
+		flag.Usage()
+		os.Exit(2)
+	}
 
 	funcMap := template.FuncMap{
 		"hex":  hex.Dump,
@@ -35,7 +44,7 @@ func init() {
 	}
 	tmplText := *templText
 	if *raw {
-		tmplText = "{{.Data|printf \"%s\"}}"
+		*templText = "{{.Data|printf \"%s\"}}"
 	}
 
 	templ = template.Must(template.New("output").Funcs(funcMap).Parse(tmplText))
@@ -49,14 +58,16 @@ func printMsg(msg *nats.Msg) {
 }
 
 func main() {
-	nc, err := nats.Connect(*natsUri)
+	nc, err := nats.Connect(natsUri)
 	if err != nil {
 		panic(err)
 	}
 
-	_, err = nc.Subscribe(*sub, printMsg)
-	if err != nil {
-		panic(err)
+	for _, s := range flag.Args() {
+		_, err = nc.Subscribe(s, printMsg)
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	runtime.Goexit()
