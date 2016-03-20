@@ -16,12 +16,12 @@ import (
 )
 
 var (
-	natsUri string
+	natsURI string
 	templ   *template.Template
 )
 
 func init() {
-	flag.StringVar(&natsUri, "url", nats.DefaultURL, "Uri to connect with NATS")
+	flag.StringVar(&natsURI, "url", nats.DefaultURL, "Uri to connect with NATS")
 	templText := flag.String("templ", "{{time.Unix}}\t{{.Subject}}\t{{.Reply}}\n\t{{.Data | hex }}", "Template for output in golang text/template format with some added functions")
 	raw := flag.Bool("raw", false, "Short for template that just prints the data as it comes. Is equal to -t \"{{.Data|printf \"%s\"}}\"")
 
@@ -58,7 +58,7 @@ func printMsg(msg *nats.Msg) {
 }
 
 func main() {
-	nc, err := nats.Connect(natsUri)
+	nc, err := nats.Connect(natsURI)
 	if err != nil {
 		panic(err)
 	}
