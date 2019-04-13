@@ -1,6 +1,5 @@
 # nats-cli-utils
 A small collection of command line tools for working with nats messaging system.
-This is a work in progress...
 
 To get all commands, run:
 ```
@@ -31,6 +30,7 @@ Flags:
 
 nats-srv
 --------
+_depricated_  Will not continue building this command. 
 Experimental state. Dont expect it to be useful yet.
 Services are chained together, sort of like unix pipes. Currently just a few exists, but more will come.
 

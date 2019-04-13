@@ -57,6 +57,7 @@ func FindService(args ...string) (Service, error) {
 func RegisterService(createFn ServiceCreatorFn) ServiceCreator {
 	return ServiceRegister.Register(createFn)
 }
+
 func (srt *ServiceRegisterType) Register(createFn ServiceCreatorFn) ServiceCreator {
 	*srt = append(*srt, createFn)
 	return createFn
@@ -65,6 +66,7 @@ func (srt *ServiceRegisterType) Register(createFn ServiceCreatorFn) ServiceCreat
 func (srt *ServiceRegisterType) FindService(args ...string) (Service, error) {
 	for _, sv := range *srt {
 		srv, err := sv.Create(args...)
+    //fmt.Printf("Create service: %+v -> %+v, %v\n", args, srv, err)
 		if err == nil {
 			return srv, nil
 		}

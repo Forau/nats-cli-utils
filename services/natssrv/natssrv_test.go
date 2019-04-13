@@ -7,7 +7,7 @@ import (
 )
 
 func TestServicedCreated(t *testing.T) {
-	s, err := services.FindService("nats-srv")
+	s, err := services.FindService("nats-srv", "randomTopic")
 	if err != nil {
 		t.Fatal("Got error ", err)
 	}

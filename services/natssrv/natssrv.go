@@ -39,7 +39,7 @@ func init() {
 				case string:
 					nc.Publish(msg.Reply, []byte(restyp))
 				default:
-					log.Panic("No converter for ", restyp, " (", reflect.TypeOf(res), ")")
+					log.Panic("No converter for ", restyp, " (", reflect.TypeOf(res), ")")  // TODO: A printf %T is nicer
 				}
 			})
 			fmt.Println("NATS service on subject: ", *subject, " :: ", sub)

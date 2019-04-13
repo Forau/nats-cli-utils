@@ -81,7 +81,7 @@ func init() {
 			cmd.Stdin = strings.NewReader(str)
 
 			buf, err := cmd.CombinedOutput()
-			log.Printf("Exec command '%s' -> '%s', %+v\n", *cmd, string(buf), err)
+			log.Printf("Exec command '%s' -> '%s', %+v\n", *cmdStr, string(buf), err)
 			if err != nil {
 				return nil, err
 			}
